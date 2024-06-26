@@ -1,7 +1,9 @@
-Maximiliano Fabbri
-Coderhose - Curso SQL - Comision 57.190
+Alumno: Maximiliano Fabbri
+Curso: Coderhouse - SQL
+Comision: 57190
+Proyecto: Merchanmanger
 
-Proyecto: Base de Datos para seguimiento de trabajos de una empresa de Merchandising
+Detalle: Base de Datos para seguimiento de trabajos de una empresa de Merchandising
 
 Los trabajos estan compuestos por un pedido, que tiene uno o más items, La base de datos, debe reflejar el estado de tanto los Items, como los Pedidos en general.
 Registrando que usuario hace el cambio de estado en cada caso.
