@@ -1,19 +1,26 @@
-CREATE DATABASE IF NOT EXISTS merchanmanager;
+-- GENERAR EL DDL
+
+DROP DATABASE IF EXISTS merchanmanager;
+
+CREATE DATABASE merchanmanager;
 
 USE merchanmanager;
 
-CREATE TABLE remitos(
+-- Tabla REMITO
+CREATE TABLE remito(
 	id_remito INT NOT NULL AUTO_INCREMENT,
     id_pedido INT NOT NULL,
     id_usuario INT NOT NULL,
     id_cliente INT NOT NULL,
+    numero_remito VARCHAR(15) NOT NULL DEFAULT 'R00001-00000001',
     fecha  DATE NOT NULL DEFAULT (CURRENT_DATE),
 	transporte VARCHAR(245),
 	detalle VARCHAR(245),
     PRIMARY KEY(id_remito)
 );
 
-CREATE TABLE items_remitos(
+-- Tabla ITEM_REMITO
+CREATE TABLE item_remito(
 	id_item_remito INT NOT NULL AUTO_INCREMENT,
     id_remito INT NOT NULL,
     cantidad INT NOT NULL DEFAULT 1,
@@ -21,7 +28,8 @@ CREATE TABLE items_remitos(
     PRIMARY KEY(id_item_remito)
 );
 
-CREATE TABLE clientes(
+-- Tabla CLIENTE
+CREATE TABLE cliente(
 	id_cliente INT NOT NULL AUTO_INCREMENT,
 	nombre VARCHAR(245),
     cuit VARCHAR(11) UNIQUE,
@@ -32,14 +40,16 @@ CREATE TABLE clientes(
     PRIMARY KEY(id_cliente)
 );
 
-CREATE TABLE roles_usuarios(
+-- Tabla ROL_USUARIO
+CREATE TABLE rol_usuario(
 	id_rol INT NOT NULL AUTO_INCREMENT,
     nombre VARCHAR(50),
     descripcion VARCHAR(245),
     PRIMARY KEY(id_rol)
 );
 
-CREATE TABLE usuarios(
+-- Tabla USUARIO
+CREATE TABLE usuario(
 	id_usuario INT NOT NULL AUTO_INCREMENT,
 	id_rol INT NOT NULL,
     nombre VARCHAR(245),
@@ -49,7 +59,8 @@ CREATE TABLE usuarios(
     PRIMARY KEY(id_usuario)
 );
 
-CREATE TABLE proveedores(
+-- Tabla PROVEEDOR
+CREATE TABLE proveedor(
 	id_proveedor INT NOT NULL AUTO_INCREMENT,
 	nombre VARCHAR(245),
     cuit VARCHAR(11) UNIQUE,
@@ -60,13 +71,15 @@ CREATE TABLE proveedores(
     PRIMARY KEY(id_proveedor)
 );
 
-CREATE TABLE estado_pedidos(
+-- Tabla ESTADO_PEDIDO
+CREATE TABLE estado_pedido(
 	id_estado_pedido INT NOT NULL AUTO_INCREMENT,
     estado_pedido VARCHAR(50),
     PRIMARY KEY(id_estado_pedido)
 );
 
-CREATE TABLE pedidos(
+-- Tabla PEDIDO
+CREATE TABLE pedido(
 	id_pedido INT NOT NULL AUTO_INCREMENT,
     id_cliente INT NOT NULL,
     id_usuario INT NOT NULL,
@@ -80,13 +93,15 @@ CREATE TABLE pedidos(
     PRIMARY KEY(id_pedido)
 );
 
-CREATE TABLE estado_items(
+-- Tabla ESTADO_ITEM
+CREATE TABLE estado_item(
 	id_estado_item INT NOT NULL AUTO_INCREMENT,
     estado_item VARCHAR(50),
     PRIMARY KEY(id_estado_item)
 );
 
-CREATE TABLE items(
+-- Tabla ITEM
+CREATE TABLE item(
 	id_item INT NOT NULL AUTO_INCREMENT,
     id_pedido INT NOT NULL,
     id_proveedor INT NOT NULL,
@@ -97,70 +112,111 @@ CREATE TABLE items(
     PRIMARY KEY(id_item)
 );
 
-CREATE TABLE movimiento_pedidos(
+-- Tabla MOVIMIENTO_PEDIDO
+CREATE TABLE movimiento_pedido(
 	id_movimiento_pedido INT NOT NULL AUTO_INCREMENT,
     id_usuario INT NOT NULL,
-    fecha_hora DATETIME DEFAULT(current_timestamp),
+    fecha_hora DATETIME NOT NULL DEFAULT(current_timestamp),
     descripcion VARCHAR(245),
     id_estado_pedido INT NOT NULL,
     PRIMARY KEY(id_movimiento_pedido)
 );
 
-CREATE TABLE movimiento_items(
+-- Tabla MOVIMIENTO_ITEM
+CREATE TABLE movimiento_item(
 	id_movimiento_item INT NOT NULL AUTO_INCREMENT,
     id_usuario INT NOT NULL,
-    fecha_hora DATETIME DEFAULT(current_timestamp),
+    fecha_hora DATETIME NOT NULL DEFAULT(current_timestamp),
     descripcion VARCHAR(245),
     id_estado_item INT NOT NULL,
     PRIMARY KEY(id_movimiento_item)
 );
 
-ALTER TABLE remitos
+
+-- FOREIGN KEYS DEFINITIONS
+
+-- REMITO
+
+ALTER TABLE remito
 	ADD CONSTRAINT fk_remito_pedido
-    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido),
+    FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido);
 
+ALTER TABLE remito
     ADD CONSTRAINT fk_remito_usuario
-    FOREIGN KEY(id_usuario) REFERENCES usuarios(id_usuario),
-    
+    FOREIGN KEY(id_usuario) REFERENCES usuario(id_usuario);
+
+ALTER TABLE remito    
     ADD CONSTRAINT fk_remito_cliente
-    FOREIGN KEY(id_cliente) REFERENCES clientes(id_cliente);
+    FOREIGN KEY(id_cliente) REFERENCES cliente(id_cliente);
+
     
-ALTER TABLE items_remitos
-	ADD CONSTRAINT fk_items_remito_remito
-    FOREIGN KEY(id_remito) REFERENCES remitos(id_remito);
+-- ITEM_REMITO    
+    
+ALTER TABLE item_remito
+	ADD CONSTRAINT fk_item_remito_remito
+    FOREIGN KEY(id_remito) REFERENCES remito(id_remito);
 
-ALTER TABLE usuarios
-	ADD CONSTRAINT fk_usuarios_roles
-    FOREIGN KEY(id_rol) REFERENCES roles_usuarios(id_rol) ;
 
-ALTER TABLE pedidos
-	ADD CONSTRAINT fk_pedidos_cliente
-    FOREIGN KEY(id_cliente) REFERENCES clientes(id_cliente) ,
-    ADD CONSTRAINT fk_pedidos_usuarios
-    FOREIGN KEY(id_usuario) REFERENCES usuarios(id_usuario) ,
-    ADD CONSTRAINT fk_pedidos_esto_pedidos
-    FOREIGN KEY(id_estado_pedido) REFERENCES estado_pedidos(id_estado_pedido) ;
+-- USUARIO
 
-ALTER TABLE items
-	ADD CONSTRAINT fk_items_pedidos
-    FOREIGN KEY(id_pedido) REFERENCES pedidos(id_pedido) ,
-	ADD CONSTRAINT fk_items_proveedores
-    FOREIGN KEY(id_proveedor) REFERENCES proveedores(id_proveedor) ,	
-    ADD CONSTRAINT fk_items_usuarios
-    FOREIGN KEY(id_usuario) REFERENCES usuarios(id_usuario) ,
-	ADD CONSTRAINT fk_items_estado_items
-    FOREIGN KEY(id_estado_item) REFERENCES estado_items(id_estado_item) ;
+ALTER TABLE usuario
+	ADD CONSTRAINT fk_usuario_rol
+    FOREIGN KEY(id_rol) REFERENCES rol_usuario(id_rol) ;
 
-ALTER TABLE movimiento_pedidos
-	ADD CONSTRAINT fk_movimiento_pedidos_usuario
-    FOREIGN KEY(id_usuario) REFERENCES usuarios(id_usuario) ,
-	ADD CONSTRAINT fk_movimiento_pedidos_estado
-    FOREIGN KEY(id_estado_pedido) REFERENCES estado_pedidos(id_estado_pedido) ;
 
-ALTER TABLE movimiento_items
+-- PEDIDO
+
+ALTER TABLE pedido
+	ADD CONSTRAINT fk_pedido_cliente
+    FOREIGN KEY(id_cliente) REFERENCES cliente(id_cliente) ;
+    
+ALTER TABLE pedido    
+    ADD CONSTRAINT fk_pedido_usuario
+    FOREIGN KEY(id_usuario) REFERENCES usuario(id_usuario) ;
+    
+ALTER TABLE pedido    
+    ADD CONSTRAINT fk_pedido_estado_pedido
+    FOREIGN KEY(id_estado_pedido) REFERENCES estado_pedido(id_estado_pedido) ;
+
+
+-- ITEM
+
+ALTER TABLE item
+	ADD CONSTRAINT fk_item_pedido
+    FOREIGN KEY(id_pedido) REFERENCES pedido(id_pedido) ;
+    
+ ALTER TABLE item   
+	ADD CONSTRAINT fk_item_proveedor
+    FOREIGN KEY(id_proveedor) REFERENCES proveedor(id_proveedor) ;
+	
+ALTER TABLE item  
+  ADD CONSTRAINT fk_item_usuario
+    FOREIGN KEY(id_usuario) REFERENCES usuario(id_usuario) ;
+    
+ALTER TABLE item    
+	ADD CONSTRAINT fk_item_estado_item
+    FOREIGN KEY(id_estado_item) REFERENCES estado_item(id_estado_item) ;
+   
+   
+-- MOVIMIENTO_PEDIDO    
+
+ALTER TABLE movimiento_pedido
+	ADD CONSTRAINT fk_movimiento_pedido_usuario
+    FOREIGN KEY(id_usuario) REFERENCES usuario(id_usuario) ;
+    
+ALTER TABLE movimiento_pedido
+	ADD CONSTRAINT fk_movimiento_pedido_estado
+    FOREIGN KEY(id_estado_pedido) REFERENCES estado_pedido(id_estado_pedido) ;
+    
+    
+-- MOVIMIENTO_ITEM
+
+ALTER TABLE movimiento_item
 	ADD CONSTRAINT fk_movimiento_items_usuario
-    FOREIGN KEY(id_usuario) REFERENCES usuarios(id_usuario) ,
-	ADD CONSTRAINT fk_movimiento_items_estado
-    FOREIGN KEY(id_estado_item) REFERENCES estado_items(id_estado_item) ;
+    FOREIGN KEY(id_usuario) REFERENCES usuario(id_usuario) ;
+    
+ALTER TABLE movimiento_item    
+	ADD CONSTRAINT fk_movimiento_item_estado
+    FOREIGN KEY(id_estado_item) REFERENCES estado_item(id_estado_item) ;
 
     
