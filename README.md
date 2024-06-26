@@ -1,6 +1,9 @@
 Alumno: Maximiliano Fabbri
+
 Curso: Coderhouse - SQL
+
 Comision: 57190
+
 Proyecto: Merchanmanger
 
 Detalle: Base de Datos para seguimiento de trabajos de una empresa de Merchandising
